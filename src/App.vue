@@ -13,7 +13,7 @@
   <VLoader v-if="isLoading" />
 </template>
 
-<script>
+<script  lang="ts">
 import Accordion from './components/Accordion/Accordion.vue'
 import VLoader from './components/Loader/VLoader.vue'
 
@@ -29,7 +29,7 @@ export default {
   setup () {
     const accordionData = ref(null)
 
-    const errorText = ''
+    const errorText = ref('')
     const isLoading = ref(false)
     const selectedMode = ref('default')
 
