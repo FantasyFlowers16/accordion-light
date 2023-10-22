@@ -1,27 +1,51 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div>Выбрать режим</div>
+  <select v-model="selectedMode">
+    <option>default</option>
+    <option>closable</option>
+    <option>opened</option>
+  </select>
+  <div v-if="accordionData">
+    <accordion v-if="accordionData.length" :data="accordionData" :mode="selectedMode" />
+    <div v-else>Данные для вывода отсутствуют</div>
+  </div>
+  <div v-else> {{ errorText }}</div>
+  <VLoader v-if="isLoading" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import Accordion from './components/Accordion/Accordion.vue'
+import VLoader from './components/Loader/VLoader.vue'
 
-export default defineComponent({
+import { onMounted, ref } from 'vue'
+import { getPosts } from './api/postsApi'
+export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
-})
-</script>
+    Accordion,
+    VLoader
+  },
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  setup () {
+    const accordionData = ref(null)
+
+    const errorText = ''
+    const isLoading = ref(false)
+    const selectedMode = ref('default')
+
+    onMounted(async () => {
+      isLoading.value = true
+      const response = await getPosts()
+      if (response) {
+        accordionData.value = response
+      } else {
+        errorText.value = 'Ошибка загрузки данных'
+      }
+
+      isLoading.value = false
+    })
+
+    return { accordionData, errorText, selectedMode }
+  }
 }
-</style>
+</script>
